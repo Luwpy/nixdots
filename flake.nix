@@ -19,15 +19,31 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: 
- {
-    nixosConfigurations.athena = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/athena/configuration.nix
-
-        inputs.home-manager.nixosModules.default
-      ];
+  } @ inputs: let
+    # Import your custom library
+    lib = import ./myLib {
+      inherit inputs;
+      haumea = inputs.haumea.lib;
     };
+    
+    # Default system for convenience
+    system = "x86_64-linux";
+  in {
+    # NixOS Configurations
+    nixosConfigurations = {
+      athena = lib.mkSystem system ./hosts/athena/configuration.nix;
+    };
+
+    # Home Manager Configurations
+    homeConfigurations = {
+      "luwpy@athena" = lib.mkHome system ./hosts/athena/home.nix;
+    };
+
+    # Export your library for reuse
+    inherit lib;
+
+    # Export loaded modules for inspection
+    nixosModules = lib.nixosModules;
+    homeManagerModules = lib.homeManagerModules;
   };
 }
