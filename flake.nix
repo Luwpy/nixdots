@@ -19,19 +19,12 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: let
-    myNixOS = inputs.haumea.lib.load {
-      src = ./nixosModules;
-      inputs = {
-        inherit (nixpkgs) lib;
-      };
-    };
-  in {
+  } @ inputs: 
+ {
     nixosConfigurations.athena = nixpkgs.lib.nixosSystem {
       specialArgs = {inherit inputs;};
       modules = [
         ./hosts/athena/configuration.nix
-        myNixOS
 
         inputs.home-manager.nixosModules.default
       ];
