@@ -42,8 +42,6 @@
     # Export your library for reuse
     inherit lib;
 
-    # Export loaded modules for inspection
-    nixosModules = lib.nixosModules;
-    homeManagerModules = lib.homeManagerModules;
+   
   };
 }

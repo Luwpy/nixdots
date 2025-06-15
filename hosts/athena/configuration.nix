@@ -10,12 +10,24 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./../../nixosModules/features/doas.nix
   ];
+
+  features = {
+    doas.enable = true;
+    niri.enable = true;
+    cachix.enable = true;
+  };
 
   # Bootloader.
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.supportedFilesystems = ["ntfs"];
+  fileSystems."/home/luwpy/games" = {
+    device = "/dev/sdb1"; # Replace with your NTFS partition
+    fsType = "ntfs";
+  };
 
   networking.hostName = "athena"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -51,6 +63,7 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  programs.niri.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -89,6 +102,11 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+  programs.steam.enable = true;
+  programs.steam.extraCompatPackages = with pkgs; [
+    proton-ge-bin
+  ];
+  programs.steam.remotePlay.openFirewall = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
